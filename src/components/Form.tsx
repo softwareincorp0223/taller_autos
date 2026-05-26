@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
    TIPOS
 ========================= */
 
-type FieldType = "text" | "email" | "select" | "file" | "checkbox" | (string & {}) | "number" | "textarea";
+type FieldType = "text" | "email" | "password" | "select" | "file" | "checkbox" | (string & {}) | "number" | "textarea";
 
 export type Field = {
   name: string;
@@ -34,7 +34,7 @@ type FormProps = {
   title?: string;
   fields: Field[];
   columns?: 1 | 2 | 3 | 4;
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: FormValues) => void | boolean | Promise<void | boolean>;
 };
 
 /* =========================
@@ -65,21 +65,35 @@ export default function Form({
   columns = 2,
   onSubmit,
 }: FormProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    onSubmit(Object.fromEntries(data.entries()));
+    const shouldReset = await onSubmit(Object.fromEntries(data.entries()));
+
+    if (shouldReset !== false) {
+      e.currentTarget.reset();
+    }
   };
 
   const renderField = (field: Field) => {
     switch (field.type) {
       case "text":
       case "email":
+      case "password":
       case "number":
-      case "textarea":
         return (
           <Input
             type={field.type}
+            name={field.name}
+            placeholder={field.placeholder}
+            required={field.required}
+          />
+        );
+
+      case "textarea":
+        return (
+          <Input
+            type="text"
             name={field.name}
             placeholder={field.placeholder}
             required={field.required}

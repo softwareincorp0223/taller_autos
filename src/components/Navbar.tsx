@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Avatar,
   AvatarFallback,
@@ -13,21 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import ThemeToggle from "./ThemeToggle";
+import { logout } from "@/services/authService";
 
 const routeTitles: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/sucursales": "Sucursales",
-  "/productos": "Productos",
-  "/roles": "Roles",
-  "/usuarios": "Usuarios",
-  "/prospectos": "Prospectos",
-  "/agenda": "Agenda",
+  "/citas": "Citas",
   "/clientes": "Clientes",
-  "/cotizaciones": "Cotizaciones",
-  "/pagos": "Pagos",
-  "/calendario": "Calendario",
-  "/documentacion": "Documentación",
-  "/calculadora": "Calculadora",
+  "/garantias": "Garantias",
+  "/historial": "Historial",
+  "/remisiones": "Remisiones",
+  "/servicios": "Servicios",
+  "/usuarios": "Usuarios",
+  "/vehiculos": "Vehiculos",
 };
 
 export default function Navbar({
@@ -36,9 +32,13 @@ export default function Navbar({
   onMenuClick: () => void;
 }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const title = routeTitles[pathname] ?? "Sistema Integral";
 
-  const title =
-    routeTitles[pathname] ?? "Sistema Integral";
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
 
   return (
     <header className="
@@ -47,9 +47,7 @@ export default function Navbar({
       flex items-center justify-between
       px-6 md:px-8 md:ml-72
     ">
-      {/* IZQUIERDA */}
       <div className="flex items-center gap-3">
-        {/* BOTÓN HAMBURGUESA */}
         <button
           className="md:hidden flex items-center justify-center"
           onClick={onMenuClick}
@@ -64,9 +62,7 @@ export default function Navbar({
         </h1>
       </div>
 
-      {/* DERECHA */}
       <div className="flex items-center gap-4">
-        {/* NOTIFICACIONES */}
         <button className="
           relative
           flex items-center justify-center
@@ -84,7 +80,6 @@ export default function Navbar({
           " />
         </button>
 
-        {/* CONFIG */}
         <button className="
           hidden sm:flex
           flex items-center justify-center
@@ -99,12 +94,10 @@ export default function Navbar({
           </span>
         </button>
 
-        {/* THEME TOGGLE */}
         <div className="flex items-center">
           <ThemeToggle />
         </div>
 
-        {/* USUARIO */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="
@@ -115,7 +108,7 @@ export default function Navbar({
             ">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/assets/react.svg" />
-                <AvatarFallback>AE</AvatarFallback>
+                <AvatarFallback>TA</AvatarFallback>
               </Avatar>
 
               <span className="
@@ -124,7 +117,7 @@ export default function Navbar({
                 hidden sm:block
                 leading-none
               ">
-                Angel
+                Taller
               </span>
             </button>
           </DropdownMenuTrigger>
@@ -132,12 +125,12 @@ export default function Navbar({
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem
               className="text-red-600 cursor-pointer"
-              onClick={() => console.log("Cerrar sesión")}
+              onClick={handleLogout}
             >
               <span className="material-icons text-sm mr-2">
                 logout
               </span>
-              Cerrar sesión
+              Cerrar sesion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Wallet, X } from "lucide-react"
+import { Car, X } from "lucide-react";
 
 const linkBase = `
   relative
@@ -12,6 +12,17 @@ const linkBase = `
 
 const linkActive = "bg-grisClaro text-principal shadow-xl dark:bg-oscuro dark:text-white";
 const linkInactive = "text-grisClaro hover:bg-grisClaro/10";
+
+const menuItems = [
+  { to: "/citas", icon: "event_note", label: "Citas" },
+  { to: "/clientes", icon: "badge", label: "Clientes" },
+  { to: "/garantias", icon: "verified", label: "Garantias" },
+  { to: "/historial", icon: "history", label: "Historial" },
+  { to: "/remisiones", icon: "receipt_long", label: "Remisiones" },
+  { to: "/servicios", icon: "build", label: "Servicios" },
+  { to: "/usuarios", icon: "group", label: "Usuarios" },
+  { to: "/vehiculos", icon: "directions_car", label: "Vehiculos" },
+];
 
 export default function Sidebar({
   open,
@@ -34,27 +45,22 @@ export default function Sidebar({
         md:translate-x-0
       `}
     >
-      {/* LOGO */}
-
       <div className="h-24 flex items-center justify-between px-10 border-b border-grisClar dark:bg-oscuro-border">
-        {/* LOGO + TEXTO */}
         <div className="flex items-center gap-3">
           <div className="bg-primario size-10 rounded-lg flex items-center justify-center text-white">
-            {/* Icono */}
-            <Wallet size={48} className="text-white" />
+            <Car size={34} className="text-white" />
           </div>
 
           <div className="flex flex-col leading-none">
             <h1 className="text-white dark:text-white text-lg font-bold uppercase tracking-wider">
-              Pension CRM
+              Taller Autos
             </h1>
             <p className="text-slate-300 text-xs font-medium uppercase tracking-widest mt-1 dark:text-gray-400">
-              Portal de asesores
+              Gestion de taller
             </p>
           </div>
         </div>
 
-        {/* BOTÓN CERRAR MOBILE */}
         <button
           className="md:hidden text-slate-600 hover:text-primario transition-colors"
           onClick={onClose}
@@ -63,42 +69,17 @@ export default function Sidebar({
         </button>
       </div>
 
-
       <nav className="mt-6 pl-3 space-y-2">
-        <SidebarLink to="/dashboard" icon="dashboard" label="Dashboard" />
-        <SidebarLink to="/sucursales" icon="corporate_fare" label="Sucursales" />
-        <SidebarLink to="/productos" icon="inventory_2" label="Productos" />
-        <SidebarLink to="/roles" icon="admin_panel_settings" label="Roles" />
-        <SidebarLink to="/usuarios" icon="group" label="Usuarios" />
-        <SidebarLink to="/prospectos" icon="person_search" label="Prospectos" />
-        <SidebarLink to="/agenda" icon="event_note" label="Agenda" />
-        <SidebarLink to="/clientes" icon="badge" label="Clientes" />
-        <SidebarLink to="/cotizaciones" icon="request_quote" label="Cotización" />
-        <SidebarLink to="/pagos" icon="payments" label="Pagos" />
-        <SidebarLink to="/calendario" icon="calendar_month" label="Calendario" />
-        <SidebarLink to="/documentacion" icon="folder_open" label="Documentación" />
-        <SidebarLink to="/calculadora" icon="calculate" label="Calculadora" />
+        {menuItems.map((item) => (
+          <SidebarLink
+            key={item.to}
+            to={item.to}
+            icon={item.icon}
+            label={item.label}
+          />
+        ))}
       </nav>
     </aside>
-  );
-}
-
-/* ---------- COMPONENTES AUX ---------- */
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <p className="px-6 mb-2 text-xs uppercase tracking-widest text-primario dark:text-white">
-        {title}
-      </p>
-      {children}
-    </div>
   );
 }
 
