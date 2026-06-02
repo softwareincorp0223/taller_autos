@@ -8,6 +8,7 @@ import {
   obtenerUsuarios,
   type Usuario,
 } from "@/services/usuariosService";
+import { confirmAction, confirmDelete, notifyError, notifySuccess } from "@/services/alertService";
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -55,6 +56,12 @@ export default function Usuarios() {
     try {
       setError("");
       setMessage("");
+      const confirmed = await confirmAction(
+        "Registrar usuario",
+        "Deseas registrar este nuevo usuario?"
+      );
+
+      if (!confirmed) return false;
 
       const nuevoUsuario = await crearUsuario({
         nombre: String(data.nombre),
@@ -66,14 +73,17 @@ export default function Usuarios() {
 
       setUsuarios((current) => [nuevoUsuario, ...current]);
       setMessage("Usuario registrado correctamente");
+      await notifySuccess("Usuario registrado correctamente");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo registrar el usuario");
+      const msg = err instanceof Error ? err.message : "No se pudo registrar el usuario";
+      setError(msg);
+      await notifyError("Error", msg);
       return false;
     }
   };
 
   const handleDelete = async (usuario: Usuario) => {
-    const confirmar = window.confirm(`Eliminar usuario ${usuario.usuario}?`);
+    const confirmar = await confirmDelete("Eliminar usuario", `Eliminar usuario ${usuario.usuario}?`);
 
     if (!confirmar) return;
 
@@ -85,8 +95,11 @@ export default function Usuarios() {
         current.filter((item) => item.id_usuario !== usuario.id_usuario)
       );
       setMessage("Usuario eliminado correctamente");
+      await notifySuccess("Usuario eliminado correctamente");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo eliminar el usuario");
+      const msg = err instanceof Error ? err.message : "No se pudo eliminar el usuario";
+      setError(msg);
+      await notifyError("Error", msg);
     }
   };
 

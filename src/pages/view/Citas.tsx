@@ -12,6 +12,7 @@ import {
 } from "@/services/citasService";
 import { obtenerClientes, type Cliente } from "@/services/clientesService";
 import { obtenerVehiculos, type Vehiculo } from "@/services/vehiculosService";
+import { confirmAction, confirmDelete, notifyError, notifySuccess } from "@/services/alertService";
 
 type CitaForm = {
   id_cliente: string;
@@ -142,19 +143,29 @@ export default function Citas() {
         estado: form.estado,
         observaciones: form.observaciones,
       };
+      const confirmed = await confirmAction(
+        editingId ? "Actualizar cita" : "Registrar cita",
+        editingId ? "Deseas guardar los cambios de esta cita?" : "Deseas registrar esta nueva cita?"
+      );
+
+      if (!confirmed) return;
 
       if (editingId) {
         await actualizarCita(editingId, payload);
         setMessage("Cita actualizada correctamente");
+        await notifySuccess("Cita actualizada correctamente");
       } else {
         await crearCita(payload);
         setMessage("Cita registrada correctamente");
+        await notifySuccess("Cita registrada correctamente");
       }
 
       resetForm();
       await cargarDatos();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo guardar la cita");
+      const msg = err instanceof Error ? err.message : "No se pudo guardar la cita";
+      setError(msg);
+      await notifyError("Error", msg);
     } finally {
       setSaving(false);
     }
@@ -176,7 +187,10 @@ export default function Citas() {
   };
 
   const handleDelete = async (cita: Cita) => {
-    const confirmar = window.confirm(`Eliminar la cita de ${cita.cliente ?? "cliente"}?`);
+    const confirmar = await confirmDelete(
+      "Eliminar cita",
+      `Eliminar la cita de ${cita.cliente ?? "cliente"}?`
+    );
 
     if (!confirmar) return;
 
@@ -186,8 +200,11 @@ export default function Citas() {
       await eliminarCita(cita.id_cita);
       setCitas((current) => current.filter((item) => item.id_cita !== cita.id_cita));
       setMessage("Cita eliminada correctamente");
+      await notifySuccess("Cita eliminada correctamente");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo eliminar la cita");
+      const msg = err instanceof Error ? err.message : "No se pudo eliminar la cita";
+      setError(msg);
+      await notifyError("Error", msg);
     }
   };
 
